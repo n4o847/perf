@@ -16,7 +16,7 @@ pub struct DiskStat {
  * Read I/O and transfer rates statistics from /proc/diskstats.
  * cf. https://www.kernel.org/doc/Documentation/ABI/testing/procfs-diskstats
  */
-pub fn read_diskstats_io() -> io::Result<DiskStat> {
+pub fn read_diskstats_io(device_name: &str) -> io::Result<DiskStat> {
     let file = File::open("/proc/diskstats")?;
     let reader = io::BufReader::new(file);
     for line in reader.lines() {
@@ -25,7 +25,7 @@ pub fn read_diskstats_io() -> io::Result<DiskStat> {
         iter.next().unwrap();
         iter.next().unwrap();
         let dev_name = iter.next().unwrap();
-        if dev_name != "sdb" {
+        if dev_name != device_name {
             continue;
         }
         let rd_ios: usize = iter.next().unwrap().parse().unwrap();
